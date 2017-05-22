@@ -14,7 +14,7 @@ var bodyParser = require('body-parser');
 var multer  = require('multer')
 var upload = multer({ dest: 'uploads/' })
  
-var CognitoAPI = require('../utils/Cognitive-Emotion'); 
+var CognitoAPI = require('../utils/CognitiveEmotion'); 
 
 router.use(bodyParser.urlencoded({extended:true}));
 router.use(bodyParser.json());
