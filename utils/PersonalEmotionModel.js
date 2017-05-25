@@ -8,8 +8,20 @@
  */
 
 var PersonalEmotionModel = function(singleEmotionData){
+    this.singleEmotionData = singleEmotionData;
+    this.jsonData = JSON.parse(singleEmotionData);
 
 }
+
+PersonalEmotionModel.prototype.singleEmotionData = '';
+PersonalEmotionModel.prototype.jsonData;
+
+PersonalEmotionModel.prototype.getJSONObj = function(){
+    return this.jsonData;
+}
+
+
+
 
 
 module.exports = PersonalEmotionModel;
