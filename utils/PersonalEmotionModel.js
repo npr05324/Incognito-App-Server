@@ -23,5 +23,4 @@ PersonalEmotionModel.prototype.getJSONObj = function(){
 
 
 
-
 module.exports = PersonalEmotionModel;

@@ -7,21 +7,28 @@
  *
  */
 
-var crypto = require(crypto);
+var crypto = require('crypto');
 
 var PicData = function(picFileName,picTitle,emotionData, currentDateTime){
+
+    var shasum = crypto.createHash('sha1');
+    
+
     this.picFileName = picFileName;
     this.emotionData = emotionData;
     this.picTitle = picTitle;
+    this.currentDateTime = currentDateTime;
+    shasum.update(this.picTitle+this.picFileName+this.currentDateTime);
+    this.picKEY = shasum.digest('hex');
 }
 
-
+PicData.prototype.currentDateTime = '';
 PicData.prototype.picFileName = '';
 PicData.prototype.picTitle = '';
 PicData.prototype.emotionData = '';
 PicData.prototype.picKEY = '';
 
-PicData.prototype.getEmotioData = function(){
+PicData.prototype.getEmotionData = function(){
     return this.emotionData;
 }
 
@@ -34,10 +41,11 @@ PicData.prototype.getPicTitle = function(){
 }
 
 PicData.prototype.getPicKey = function(){
-    var shasum = crypto.createHash('sha1');
-    shasum.update(this.getPicTitle+this.getPicFileName+this.currentDateTime);
+    return this.picKEY;
+}
 
-    return shasum.didest('hex');
+PicData.prototype.getPicTime = function(){
+    return this.currentDateTime;
 }
 
 module.exports = PicData;

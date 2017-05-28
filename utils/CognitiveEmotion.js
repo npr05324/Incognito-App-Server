@@ -9,8 +9,12 @@
 
 var fs = require('fs');
 var request = require('request');
+var PicDataModel = require('./PicDataModel');
 
-exports.getCognitive = async function(fileObj,callback){
+var dateTime = require('node-datetime');
+var dt = dateTime.create();
+
+exports.getCognitive = function(fileObj, picTitle, callback){
     var fileName = process.cwd() + '/' + fileObj.destination + fileObj.filename;
     var result;
     console.log(fileName);
@@ -27,16 +31,18 @@ exports.getCognitive = async function(fileObj,callback){
     
     function sendReq(error, response, body) {
         if (!error && response.statusCode == 200) {
+
             var info = JSON.parse(body);
-            result = {'error':false, 'result': info};
+            var emotionData = new PicDataModel(fileObj.filename, picTitle, info, dt.now());
+
+            result = {error:false, result: emotionData};
             callback(result);
         }else{
             var info = JSON.parse(body);
-            result = {'error':true, 'result': info};
+            result = {error:true, result: info};
             callback(result);
         }
     }
-    console.log('Req Start!');
     request(options,sendReq);
     
     
