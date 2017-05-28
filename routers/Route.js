@@ -17,10 +17,8 @@ var upload = multer({ dest: 'uploads/' })
 var CognitoAPI = require('../utils/CognitiveEmotion'); 
 var uploadDB = require('../utils/DataInsert');
 var loadDB = require('../utils/DataLoad');
-router.use(bodyParser.urlencoded({extended:true}));
+router.use(bodyParser.urlencoded({limit: '50mb',extended:false, parameterLimit: 1000000 }));
 router.use(bodyParser.json());
-
-
 
 
 
@@ -45,7 +43,7 @@ router.post('/',upload.single('image'),function(req, res){
         
         
     }
-
+    console.log(req.body)
     CognitoAPI.getCognitive(req.file, req.query.title, sendRes);
 });
 
