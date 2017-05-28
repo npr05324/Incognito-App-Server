@@ -9,7 +9,7 @@
 
 var express = require('express');
 var app = express();
-var routes = require('./routers/route');
+var routes = require('./routers/Route');
 
 app.use('/api',routes);
 
