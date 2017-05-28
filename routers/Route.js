@@ -46,7 +46,7 @@ router.post('/',upload.single('image'),function(req, res){
         
     }
 
-    CognitoAPI.getCognitive(req.file, req.body.title, sendRes);
+    CognitoAPI.getCognitive(req.file, req.query.title, sendRes);
 });
 
 router.get('/:id',function(req, res){
