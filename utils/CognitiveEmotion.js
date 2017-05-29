@@ -33,7 +33,7 @@ exports.getCognitive = function(fileObj, picTitle, callback){
         if (!error && response.statusCode == 200) {
 
             var info = JSON.parse(body);
-            var emotionData = new PicDataModel(fileObj.filename, picTitle, info, dt.now());
+            var emotionData = new PicDataModel(fileObj, picTitle, info, dt.now());
 
             result = {error:false, result: emotionData};
             callback(result);
