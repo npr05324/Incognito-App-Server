@@ -15,9 +15,9 @@ var dateTime = require('node-datetime');
 var dt = dateTime.create();
 
 exports.getCognitive = function(fileObj, picTitle, callback){
-    var fileName = process.cwd() + '/' + fileObj.destination + fileObj.filename;
+    var fileName = process.cwd() + '/' + 'uploads/' + fileObj;
     var result;
-    console.log(fileName);
+    console.log(fileObj);
 
     var options = {
         method: 'POST',

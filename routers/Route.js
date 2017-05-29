@@ -12,18 +12,21 @@ var router = express.Router();
 var bodyParser = require('body-parser');
 
 var multer  = require('multer')
-var upload = multer({ dest: 'uploads/' })
- 
+//var upload = multer({ dest: 'uploads/' })
+var fs = require('fs');
+var crypto = require('crypto');
+var dateTime = require('node-datetime');
+var dt = dateTime.create();
 var CognitoAPI = require('../utils/CognitiveEmotion'); 
 var uploadDB = require('../utils/DataInsert');
 var loadDB = require('../utils/DataLoad');
-router.use(bodyParser.urlencoded({limit: '50mb',extended:false, parameterLimit: 1000000 }));
+router.use(bodyParser.raw({limit: '50mb',type: 'application/*'}));
 router.use(bodyParser.json());
 
 
 
 
-router.post('/',upload.single('image'),function(req, res){
+router.post('/',function(req, res){
     function sendRes(result){
         if(!result['error']){
             //console.log(result['result']);
@@ -43,8 +46,16 @@ router.post('/',upload.single('image'),function(req, res){
         
         
     }
-    console.log(req.body)
-    CognitoAPI.getCognitive(req.file, req.query.title, sendRes);
+    var shasum = crypto.createHash('sha1');
+    shasum.update(req.body+dt.now());
+
+    var filename = shasum.digest('hex');
+    
+    console.log(filename);
+    fs.writeFileSync('./uploads/'+filename, req.body);
+
+    var fileObj = filename;
+    CognitoAPI.getCognitive(fileObj, req.query.title, sendRes);
 });
 
 router.get('/:id',function(req, res){
