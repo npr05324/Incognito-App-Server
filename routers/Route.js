@@ -28,6 +28,7 @@ router.use(bodyParser.json());
 
 router.post('/',function(req, res){
     function sendRes(result){
+        res.setHeader('charset','utf-8');
         if(!result['error']){
             //console.log(result['result']);
             //console.log();
@@ -60,7 +61,7 @@ router.post('/',function(req, res){
 
 router.get('/:id',function(req, res){
     var data_id = req.params.id;
-
+    res.setHeader('charset','utf-8');
     loadDB.loadFromDB(data_id)
             .then(function(result){
                 res.json(result);
