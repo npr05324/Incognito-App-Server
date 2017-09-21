@@ -3,19 +3,14 @@
  * Author: Cathode -Team Navigator- (HyunWoo Kim, npr05324@gmail.com)
  * Date: 2017-05-17
  * Description: Node.JS Web Application Server For Incognito App
- * 
- *
  */
 
-var express = require('express');
-var app = express();
-var routes = require('./routers/Route');
+const app = require('express')();
+const routes = require('./routers/Route');
 
-app.use('/api',routes);
+app.use('/api', routes);
 
+const port = 3000;
+const message = `Incognito Web Application Server is Listening on Port ${ port }`;
 
-
-
-app.listen(3000,function(){
-    console.log("Incognito Web Application Server is Listening on Port 3000");
-});
+app.listen(port, () => console.log(message));
