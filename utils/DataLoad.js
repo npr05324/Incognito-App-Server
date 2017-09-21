@@ -17,7 +17,7 @@ exports.loadFromDB = (id) => Promise.using(getDBConnection(), (connection) => {
 });
 
 function boxing (rows) {
-    return (typeof rows[0] === 'undefined')
-        ? { code: 0, data: 'NO_DATA' }
-        : { code: 1, data: JSON.parse(rows[0].data_res) };
+    return (rows[0])
+        ? { code: 1, data: JSON.parse(rows[0].data_res) }
+        : { code: 0, data: 'NO_DATA' };
 }
