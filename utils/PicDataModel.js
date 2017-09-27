@@ -3,66 +3,53 @@
  * Author: Cathode -Team Navigator- (HyunWoo Kim, npr05324@gmail.com)
  * Date: 2017-05-21
  * Description: Node.JS Web Application Server For Incognito App
- * 
- *
  */
 
-var crypto = require('crypto');
-var sizeOf = require('image-size');
+const sizeOf = require('image-size');
+const crypto = require('crypto');
+const shasum = crypto.createHash('sha1');
 
-var PicData = function(picFileName,picTitle,emotionData, currentDateTime){
+module.exports = class PicData {
+    constructor (picFileName, picTitle, emotionData, currentDateTime) {
+        const { width, height } = sizeOf(`${ process.cwd() }/uploads/${ picFileName }`);
 
-    var shasum = crypto.createHash('sha1');
-    
-    var dimensions = sizeOf(process.cwd() + '/' + 'uploads/' + picFileName);
-    this.imageSize = {'width':dimensions.width,'height':dimensions.height};
-    
-    this.picFileName = picFileName;
-    this.emotionData = emotionData;
-    this.picTitle = picTitle;
-    this.currentDateTime = currentDateTime;
+        this.imageSize = { width, height };
+        this.picFileName = picFileName;
+        this.picTitle = picTitle;
+        this.emotionData = emotionData;
+        this.currentDateTime = currentDateTime;
 
-    
-    shasum.update(this.picTitle+this.picFileName+this.currentDateTime);
+        const key = picTitle + picFileName + currentDateTime;
+        shasum.update(key);
 
-    
-    this.picKEY = shasum.digest('hex');
+        this.picKEY = shasum.digest('hex');
+    }
+
+    getEmotionData () {
+        return this.emotionData;
+    }
+
+    getPicFileName () {
+        return this.picFileName;
+    }
+
+    getPicTitle () {
+        return this.picTitle;
+    }
+
+    getPicKey () {
+        return this.picKEY;
+    }
+
+    getPicTime () {
+        return this.currentDateTime;
+    }
+
+    getImageWidth () {
+        return this.imageSize.width;
+    }
+
+    getImageHeight () {
+        return this.imageSize.height;
+    }
 }
-
-PicData.prototype.currentDateTime = '';
-PicData.prototype.picFileName = '';
-PicData.prototype.picTitle = '';
-PicData.prototype.emotionData = '';
-PicData.prototype.picKEY = '';
-PicData.prototype.picTEST = '';
-PicData.prototype.imageSize = '';
-
-PicData.prototype.getEmotionData = function(){
-    return this.emotionData;
-}
-
-PicData.prototype.getPicFileName = function(){
-    return this.picFileName;
-}
-
-PicData.prototype.getPicTitle = function(){
-    return this.picTitle;
-}
-
-PicData.prototype.getPicKey = function(){
-    return this.picKEY;
-}
-
-PicData.prototype.getPicTime = function(){
-    return this.currentDateTime;
-}
-
-PicData.prototype.getImageWidth = function(){
-    return this.imageSize.width;
-}
-
-PicData.prototype.getImageHeight = function(){
-    return this.imageSize.height;
-}
-
-module.exports = PicData;

@@ -3,77 +3,58 @@
  * Author: Cathode -Team Navigator- (HyunWoo Kim, npr05324@gmail.com)
  * Date: 2017-05-17
  * Description: Node.JS Web Application Server For Incognito App
- * 
- *
  */
 
-var express = require('express');
-var router = express.Router();
-var bodyParser = require('body-parser');
+const router = require('express').Router();
 
-var multer  = require('multer')
-//var upload = multer({ dest: 'uploads/' })
-var fs = require('fs');
-var crypto = require('crypto');
-var dateTime = require('node-datetime');
-var dt = dateTime.create();
-var CognitoAPI = require('../utils/CognitiveEmotion'); 
-var uploadDB = require('../utils/DataInsert');
-var loadDB = require('../utils/DataLoad');
-router.use(bodyParser.raw({limit: '50mb',type: 'application/*'}));
+const bodyParser = require('body-parser');
+const fs = require('fs');
+const dt = require('node-datetime').create();
+const shasum = require('crypto').createHash('sha1');
+
+const CognitoAPI = require('../utils/CognitiveEmotion'); 
+const uploadDB = require('../utils/DataInsert');
+const loadDB = require('../utils/DataLoad');
+
+router.use(bodyParser.raw({ limit: '50mb', type: 'application/*' }));
 router.use(bodyParser.json());
 
+router.post('/', (req, res) => {
+    shasum.update(req.body + dt.now());
 
-
-
-router.post('/',function(req, res){
-    function sendRes(result){
-        res.setHeader('charset','utf-8');
-        if(!result['error']){
-            //console.log(result['result']);
-            //console.log();
-
-            uploadDB.uploadToDB(result['result'])
-            .then(function(result){
-                res.json(result);
-            }).catch(function(error){
-                res.json({'code':0,'data':error});
-            });
-
-
-        }else{
-            res.json({'code' : 2, 'data' : 'ERROR'});
-        }
-        
-        
-    }
-    var shasum = crypto.createHash('sha1');
-    shasum.update(req.body+dt.now());
-
-    var filename = shasum.digest('hex');
-    
+    const filename = shasum.digest('hex');
     console.log(filename);
-    fs.writeFileSync('./uploads/'+filename, req.body);
+    fs.writeFileSync(`./uploads/${ filename }`, req.body);
 
-    var fileObj = filename;
-    CognitoAPI.getCognitive(fileObj, req.query.title, sendRes);
+    const fileObj = filename;
+    CognitoAPI.getCognitive(fileObj, req.query.title, (result) => {
+        res.setHeader('charset', 'utf-8');
+
+        if (result.error) {
+            return res.json({ code: 2, data: 'ERROR' })
+        }
+
+        //console.log(result.result);
+        //console.log();
+
+        uploadDB
+            .uploadToDB(result.result)
+            .then((result) => res.json(result))
+            .catch((error) => res.json({ code: 0, data: error }));
+    });
 });
 
-router.get('/:id',function(req, res){
-    var data_id = req.params.id;
-    res.setHeader('charset','utf-8');
-    loadDB.loadFromDB(data_id)
-            .then(function(result){
-                res.json(result);
-            }).catch(function(error){
-                res.json({'code':0,'data':error});
-            });
+router.get('/:id', (req, res) =>{
+    const data_id = req.params.id;
 
+    res.setHeader('charset', 'utf-8');
 
+    loadDB
+        .loadFromDB(data_id)
+        .then((result) => res.json(result))
+        .catch((error) => res.json({ code: 0, data: error }));
 });
 
-router.use('/image',express.static('uploads'));
-
-
+router.use('/image', express.static('uploads'));
 
 module.exports = router;

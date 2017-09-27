@@ -3,47 +3,37 @@
  * Author: Cathode -Team Navigator- (HyunWoo Kim, npr05324@gmail.com)
  * Date: 2017-05-17
  * Description: Node.JS Web Application Server For Incognito App
- * 
- *
  */
 
-var fs = require('fs');
-var request = require('request');
-var PicDataModel = require('./PicDataModel');
+const fs = require('fs');
+const request = require('request');
+const PicDataModel = require('./PicDataModel');
 
-var dateTime = require('node-datetime');
-var dt = dateTime.create();
+const dateTime = require('node-datetime');
+const dt = dateTime.create();
 
-exports.getCognitive = function(fileObj, picTitle, callback){
-    var fileName = process.cwd() + '/' + 'uploads/' + fileObj;
-    var result;
+exports.getCognitive = (fileObj, picTitle, callback) => {
     console.log(fileObj);
 
-    var options = {
+    const fileName = `${ process.cwd() }/uploads/${ fileObj }`;
+
+    const options = {
         method: 'POST',
         url: 'https://westus.api.cognitive.microsoft.com/emotion/v1.0/recognize',
         headers: {
-            'Content-Type' : 'application/octet-stream',
-            'Ocp-Apim-Subscription-Key' : process.env.COGNITIVE_KEY
+            'Content-Type': 'application/octet-stream',
+            'Ocp-Apim-Subscription-Key': process.env.COGNITIVE_KEY
         },
         body: fs.readFileSync(fileName)
     };
-    
-    function sendReq(error, response, body) {
-        if (!error && response.statusCode == 200) {
 
-            var info = JSON.parse(body);
-            var emotionData = new PicDataModel(fileObj, picTitle, info, dt.now());
+    request(options, (error, response, body) => {
+        const info = JSON.parse(body);
+        const emotionData = new PicDataModel(fileObj, picTitle, info, dt.now());
+        const result = (!error && response.statusCode === 200)
+            ? { error: false, result: emotionData }
+            : { error: true, result: info };
 
-            result = {error:false, result: emotionData};
-            callback(result);
-        }else{
-            var info = JSON.parse(body);
-            result = {error:true, result: info};
-            callback(result);
-        }
-    }
-    request(options,sendReq);
-    
-    
+        return callback(result);
+    });
 };
